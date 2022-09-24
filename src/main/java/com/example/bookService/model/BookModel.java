@@ -5,10 +5,7 @@ import com.example.bookService.dto.BookDTO;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="bookData")
@@ -21,6 +18,7 @@ public class BookModel {
     private String bookName;
     private String author;
     private String description;
+    @Lob
     private byte[] bookLogo;
     private double price;
     private int quantity;

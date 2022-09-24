@@ -10,8 +10,16 @@ import com.example.bookService.util.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Purpose-implementation of book operation APIs.
+ * @author anuj solanki
+ * @date 20/09/2022
+ * @version 1.0
+ */
 @Service
 public class BookServices implements IBookServices{
 
@@ -23,6 +31,12 @@ public class BookServices implements IBookServices{
     @Autowired
     Token tokenUtil;
 
+    /**
+     * purpose-Logic implementation of API to add book.
+     * @param token
+     * @param bookDTO
+     * @return
+     */
     @Override
     public Response addBook(String token,BookDTO bookDTO) {
        if (isUserPresent(token)!=null){
@@ -32,6 +46,35 @@ public class BookServices implements IBookServices{
        }
         throw new BookNoteFound(400,"User note found !");
     }
+
+    /**
+     * purpose-Logic implementation of API to add book logo.
+     * @param token
+     * @param bookId
+     * @param logo
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public Response addLogo(String token, long bookId, MultipartFile logo) throws IOException {
+        if (isUserPresent(token)!=null) {
+            Optional<BookModel> bookModel = bookRepository.findById(bookId);
+            if (bookModel.isPresent()) {
+                bookModel.get().setBookLogo(logo.getBytes());
+                bookRepository.save(bookModel.get());
+                return new Response("Logo Added in Book", 200, bookModel.get());
+            }
+            throw new BookNoteFound(400,"Book note found !");
+        }
+        throw new BookNoteFound(400,"User note found !");
+    }
+
+    /**
+     * purpose-Logic implementation of API to fetch user's book.
+     * @param token
+     * @param bookId
+     * @return
+     */
 
     @Override
     public Response readBook(String token, long bookId) {
@@ -45,6 +88,11 @@ public class BookServices implements IBookServices{
         throw new BookNoteFound(400,"User note found !");
     }
 
+    /**
+     * purpose-Logic implementation of API to fetch book.
+     * @param bookId
+     * @return
+     */
     @Override
     public BookModel getBook(long bookId) {
         Optional<BookModel> bookModel=bookRepository.findById(bookId);
@@ -54,6 +102,13 @@ public class BookServices implements IBookServices{
         throw new BookNoteFound(400,"Book note found !");
     }
 
+    /**
+     * purpose-Logic implementation of API to update book details.
+     * @param token
+     * @param bookId
+     * @param bookDTO
+     * @return
+     */
     @Override
     public Response updateBook(String token, long bookId, BookDTO bookDTO) {
         if (isUserPresent(token)!=null){
@@ -70,6 +125,12 @@ public class BookServices implements IBookServices{
         throw new BookNoteFound(400,"User note found !");
     }
 
+    /**
+     * purpose-Logic implementation of API to delete book.
+     * @param token
+     * @param bookId
+     * @return
+     */
     @Override
     public Response deleteBook(String token, long bookId) {
         if (isUserPresent(token)!=null) {
@@ -83,6 +144,13 @@ public class BookServices implements IBookServices{
         throw new BookNoteFound(400,"User note found !");
     }
 
+    /**
+     * purpose-Logic implementation of API to change book price.
+     * @param token
+     * @param bookId
+     * @param price
+     * @return
+     */
     @Override
     public Response changeBookPrice(String token, long bookId, double price) {
         if (isUserPresent(token)!=null) {
@@ -97,6 +165,12 @@ public class BookServices implements IBookServices{
         throw new BookNoteFound(400,"User note found !");
     }
 
+    /**
+     * purpose-Logic implementation of API to change book quantity.
+     * @param bookId
+     * @param quantity
+     * @return
+     */
     @Override
     public Response changeBookQuantity( long bookId, int quantity) {
             Optional<BookModel> bookModel = bookRepository.findById(bookId);
@@ -111,6 +185,6 @@ public class BookServices implements IBookServices{
 
 
     public BookStoreUser isUserPresent(String token){
-        return restTemplate.getForObject("http://localhost:9091/user/verify/"+token,BookStoreUser.class);
+        return restTemplate.getForObject("http://BOOK-STORE-USER-SERVICE/user/verify/"+token,BookStoreUser.class);
     }
 }
