@@ -1,5 +1,6 @@
 package com.example.bookService.exception;
 
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.example.bookService.util.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +28,12 @@ public class BookNoteFoundExceptionHandler {
         response.setStatusMsg(Message.toString());
         response.setStatusCode(400);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(SignatureVerificationException.class)
+    public ResponseEntity<Response> handleException(SignatureVerificationException ad) {
+        Response response=new Response();
+        response.setStatusCode(400);
+        response.setStatusMsg("Invalid Token !");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
